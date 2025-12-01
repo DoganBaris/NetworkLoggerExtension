@@ -1,12 +1,11 @@
 {
   "manifest_version": 3,
   "name": "Network & Console Logger",
-  "version": "1.0",
+  "version": "1.1",
   "description": "Records network requests and console logs from web pages.",
   "permissions": [
     "webRequest",
     "storage",
-    "tabs",
     "downloads"
   ],
   "host_permissions": [
