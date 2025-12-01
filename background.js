@@ -1,16 +1,14 @@
 let networkLogs = [];
-let apiTargetUrl = ''; // Network istekleri için URL
-let consoleTargetUrl = ''; // Console logları için URL
+let apiTargetUrl = '';
+let consoleTargetUrl = '';
 let isLoggingActive = false;
 
-// Storage'dan ayarları yükle
 chrome.storage.local.get(['apiTargetUrl', 'consoleTargetUrl', 'isLoggingActive'], function(result) {
   apiTargetUrl = result.apiTargetUrl || '';
   consoleTargetUrl = result.consoleTargetUrl || '';
   isLoggingActive = result.isLoggingActive || false;
 });
 
-// URL'in hedef URL'i içerip içermediğini kontrol et
 function matchesTargetUrl(url) {
   if (!apiTargetUrl || apiTargetUrl.trim() === '') {
     return false;
@@ -18,7 +16,6 @@ function matchesTargetUrl(url) {
   return url.includes(apiTargetUrl);
 }
 
-// Network isteklerini dinle
 chrome.webRequest.onBeforeRequest.addListener(
   function(details) {
     if (!isLoggingActive) return;
@@ -42,8 +39,7 @@ chrome.webRequest.onBeforeRequest.addListener(
         url: details.url,
         requestBody: requestBody,
         startTime: startTime,
-        timestamp: new Date().toISOString(),
-        tabId: details.tabId
+        timestamp: new Date().toISOString()
       });
     }
   },
@@ -51,7 +47,6 @@ chrome.webRequest.onBeforeRequest.addListener(
   ["requestBody"]
 );
 
-// Response'ları dinle
 chrome.webRequest.onCompleted.addListener(
   function(details) {
     if (!isLoggingActive) return;
@@ -69,7 +64,6 @@ chrome.webRequest.onCompleted.addListener(
   ["responseHeaders"]
 );
 
-// Hata durumlarını dinle
 chrome.webRequest.onErrorOccurred.addListener(
   function(details) {
     if (!isLoggingActive) return;
@@ -84,7 +78,6 @@ chrome.webRequest.onErrorOccurred.addListener(
   { urls: ["<all_urls>"] }
 );
 
-// Mesajları dinle
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "getNetworkLogs") {
     sendResponse({ logs: networkLogs });
@@ -138,7 +131,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   return true;
 });
 
-// Storage değişikliklerini dinle
 chrome.storage.onChanged.addListener(function(changes, namespace) {
   if (changes.apiTargetUrl) {
     apiTargetUrl = changes.apiTargetUrl.newValue;
